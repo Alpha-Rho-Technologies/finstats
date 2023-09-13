@@ -38,10 +38,11 @@ def calc_pos_returns_pct(balance:pd.Series):
     except Exception as e:
         logging.error(f'ERROR Calc Positive % returns | {e}')
 
-def calc_es99(balance:pd.Series):
+def calc_es(balance:pd.Series,level = 99):
     try:
+        percentail = 1 - level/100
         pct = balance.pct_change()
-        es_99 = pct.quantile(0.01)
+        es_99 = pct.quantile(percentail)
         return es_99
     
     except Exception as e:
