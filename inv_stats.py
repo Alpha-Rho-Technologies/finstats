@@ -1,7 +1,7 @@
 from stats_funcs import *
 
 class strategy_stats:
-    def __init__(self,balance=pd.Series,start_date=dt.date,end_date=dt.date,bm_balance=pd.Series) -> None:
+    def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
         '''
         Retrive relevant financial stats on a given balance data series.
         '''
