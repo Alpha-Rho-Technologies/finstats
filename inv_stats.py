@@ -53,6 +53,7 @@ class strategy_stats:
             losing_streak = calc_losing_streak(self.balance)
             max_dd = calc_max_dd(self.balance)
             recovery = calc_recovery(self.balance)
+            corr = calc_corr(balance=bal_adj, bm_balance= bm_bal_adj)
 
             calmar_ratio = excess_return/abs(max_loss)
 
@@ -73,6 +74,7 @@ class strategy_stats:
                 'Negative %':neg,
                 'Max Losing Streak': losing_streak,
                 'Recovery Max DD': recovery,
+                'Correlation': corr
                 }
                 
             # Stats only relevant to strategy:

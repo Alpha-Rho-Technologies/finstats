@@ -11,6 +11,14 @@ def cal_geo_mean(balance:pd.Series):
     except Exception as e:
         logging.error(f'ERROR Calc mean | {e}')
 
+def calc_corr(balance:pd.Series,bm_balance:pd.Series):
+    try:
+        corr = balance.pct_change().corr(bm_balance.pct_change())
+        return corr
+    
+    except Exception as e:
+        logging.error(f'ERROR Calc correlation | {e}')
+
 def cal_geo_std(balance:pd.Series):
     try:
         geo_std = np.exp(np.log(1+balance.pct_change()).std()) - 1
