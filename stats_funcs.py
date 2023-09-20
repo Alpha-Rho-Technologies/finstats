@@ -60,7 +60,7 @@ def calc_max_return(balance:pd.Series):
 def calc_min_return(balance:pd.Series):
     try:
         pct = balance.pct_change()
-        min = pct.quantile(0.01)
+        min = pct.min()
         return min
     
     except Exception as e:
