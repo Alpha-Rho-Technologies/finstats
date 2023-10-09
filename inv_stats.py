@@ -26,7 +26,7 @@ class strategy_stats:
             self.bm_balance = formatted_data[bm_name]
         
         except Exception as e:
-            logging.error(f'ERROR initializing strategy stats | {e}')
+            logging.exception(f'ERROR initializing strategy stats | {e}')
 
     def get_stats(self,freq=str,annual_rf = 0.022) -> dict:
         try:
@@ -91,7 +91,7 @@ class strategy_stats:
             return stats
         
         except Exception as e:
-            logging.error(f'ERROR Retriving balance stats | {e}')
+            logging.exception(f'ERROR Retriving balance stats | {e}')
         
         
     def df(self,freq=str):
@@ -102,7 +102,7 @@ class strategy_stats:
             strat_stats = self.get_stats(freq=freq)
             return pd.Series(strat_stats).rename(f'{freq} Stats')
         except Exception as e:
-            logging.error(f'ERROR Retriving Stats df | {e}')
+            logging.exception(f'ERROR Retriving Stats df | {e}')
 
     def returns_by_month(self):
         '''
@@ -129,7 +129,7 @@ class strategy_stats:
             return round(pivot,6)
         
         except Exception as e:
-            logging.error(f'ERROR Retriving Returns by month | {e}')
+            logging.exception(f'ERROR Retriving Returns by month | {e}')
 
 class multiple_strategy:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:

@@ -9,7 +9,7 @@ def cal_geo_mean(balance:pd.Series):
         return geo_mean
     
     except Exception as e:
-        logging.error(f'ERROR Calc mean | {e}')
+        logging.exception(f'ERROR Calc mean | {e}')
 
 def calc_corr(balance:pd.Series,bm_balance:pd.Series):
     try:
@@ -17,7 +17,7 @@ def calc_corr(balance:pd.Series,bm_balance:pd.Series):
         return corr
     
     except Exception as e:
-        logging.error(f'ERROR Calc correlation | {e}')
+        logging.exception(f'ERROR Calc correlation | {e}')
 
 def cal_geo_std(balance:pd.Series):
     try:
@@ -25,7 +25,7 @@ def cal_geo_std(balance:pd.Series):
         return geo_std
     
     except Exception as e:
-        logging.error(f'ERROR Calc Geo STD | {e}')
+        logging.exception(f'ERROR Calc Geo STD | {e}')
 
 def calc_downside_dev(balance:pd.Series):
     try:
@@ -35,7 +35,7 @@ def calc_downside_dev(balance:pd.Series):
         return dowside_dev
     
     except Exception as e:
-        logging.error(f'ERROR Calc Downside STD | {e}')
+        logging.exception(f'ERROR Calc Downside STD | {e}')
 
 def calc_pos_returns_pct(balance:pd.Series):
     try:
@@ -44,7 +44,7 @@ def calc_pos_returns_pct(balance:pd.Series):
         return pos
     
     except Exception as e:
-        logging.error(f'ERROR Calc Positive % returns | {e}')
+        logging.exception(f'ERROR Calc Positive % returns | {e}')
 
 def calc_es(balance:pd.Series,level = 99):
     try:
@@ -54,7 +54,7 @@ def calc_es(balance:pd.Series,level = 99):
         return es_99
     
     except Exception as e:
-        logging.error(f'ERROR Calc ES99 | {e}')
+        logging.exception(f'ERROR Calc ES99 | {e}')
 
 def calc_max_return(balance:pd.Series):
     try:
@@ -63,7 +63,7 @@ def calc_max_return(balance:pd.Series):
         return max
     
     except Exception as e:
-        logging.error(f'ERROR Calc Max Return | {e}')
+        logging.exception(f'ERROR Calc Max Return | {e}')
 
 def calc_min_return(balance:pd.Series):
     try:
@@ -72,7 +72,7 @@ def calc_min_return(balance:pd.Series):
         return min
     
     except Exception as e:
-        logging.error(f'ERROR Calc Min Return  | {e}')
+        logging.exception(f'ERROR Calc Min Return  | {e}')
 
 def get_rf(rf,freq):
     
@@ -93,7 +93,7 @@ def get_rf(rf,freq):
         return standarized_rf
     
     except Exception as e:
-        logging.error(f'ERROR Standarizing Rf | {e}')
+        logging.exception(f'ERROR Standarizing Rf | {e}')
 
 def calc_max_dd(balance:pd.Series) -> float:
     try:
@@ -111,7 +111,7 @@ def calc_max_dd(balance:pd.Series) -> float:
         
         return max_drawdown
     except Exception as e:
-        logging.error(f'ERROR Calc Max DD | {e}')
+        logging.exception(f'ERROR Calc Max DD | {e}')
 
 def calc_losing_streak(balance:pd.Series) -> int:
     balance_pct = balance.pct_change()
@@ -129,7 +129,7 @@ def calc_losing_streak(balance:pd.Series) -> int:
         
         return max_losing_streak
     except Exception as e:
-        logging.error(f'ERROR Calc losing streak | {e}')
+        logging.exception(f'ERROR Calc losing streak | {e}')
 
 def calc_recovery(balance:pd.Series) -> int:
     """
@@ -176,7 +176,7 @@ def calc_recovery(balance:pd.Series) -> int:
 
         return recovery_period
     except Exception as e:
-        logging.error(f'ERROR Calc Recovery Max DD | {e}')
+        logging.exception(f'ERROR Calc Recovery Max DD | {e}')
 
 def calc_info_ratio(balance:pd.Series,bm_balance:pd.Series,log_returns = True) -> float:
     try:
@@ -201,7 +201,7 @@ def calc_info_ratio(balance:pd.Series,bm_balance:pd.Series,log_returns = True) -
             return np.nan
         
     except Exception as e:
-        logging.error(f'ERROR Calc Info Ratio | {e}')
+        logging.exception(f'ERROR Calc Info Ratio | {e}')
 
 def calc_beta_alpha(balance,bm_balance,log_returns=True):
 
@@ -223,7 +223,7 @@ def calc_beta_alpha(balance,bm_balance,log_returns=True):
         return {'alpha':alpha,'beta':beta}
         
     except Exception as e:
-        logging.error(f'ERROR Calc Info Ratio | {e}')
+        logging.exception(f'ERROR Calc Info Ratio | {e}')
 
 def calc_jensen_alpha(balance:pd.Series,bm_balance:pd.Series,rf:float, beta:float) -> float:
     try:
@@ -234,4 +234,4 @@ def calc_jensen_alpha(balance:pd.Series,bm_balance:pd.Series,rf:float, beta:floa
         jensen_alpha = geo_return - (rf + beta*bm_excess_return)
         return jensen_alpha
     except Exception as e:
-        logging.error(f'ERROR Calc Jensen Alpha | {e}')
+        logging.exception(f'ERROR Calc Jensen Alpha | {e}')
