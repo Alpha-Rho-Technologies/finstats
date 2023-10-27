@@ -1,4 +1,4 @@
-from stats_funcs import *
+from fin_stats.stats_funcs import *
 
 class strategy_stats:
     def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
