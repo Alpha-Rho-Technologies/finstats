@@ -95,21 +95,24 @@ def get_rf(rf,freq):
     except Exception as e:
         logging.exception(f'ERROR Standarizing Rf | {e}')
 
-def calc_max_dd(balance:pd.Series) -> float:
+def calc_max_dd(balance: pd.Series) -> float:
+    """
+    Calculates the maximum drawdown of a given balance series.
+
+    Parameters:
+    balance (pd.Series): A pandas series containing the balance values.
+
+    Returns:
+    float: The maximum drawdown as a percentage.
+    """
     try:
         # Calculate Maximum Drawdown
-        running_max = balance[0]
-        max_drawdown = 0
-        for x in balance:
-            if x > running_max:
-                running_max = x
+        running_max = balance.cummax()
+        drawdown = (balance - running_max) / running_max
+        max_drawdown = drawdown.min()
 
-            drawdown = (x - running_max) / running_max
-            
-            if drawdown < max_drawdown:
-                max_drawdown = drawdown
-        
         return max_drawdown
+
     except Exception as e:
         logging.exception(f'ERROR Calc Max DD | {e}')
 
@@ -143,7 +146,7 @@ def calc_recovery(balance:pd.Series) -> int:
                       Returns None if it never recovers.
     """
     try:
-        peak = balance[0]
+        peak = balance.iloc[0]
         max_drawdown = 0
         max_drawdown_peak = 0
 
