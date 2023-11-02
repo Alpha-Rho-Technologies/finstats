@@ -161,13 +161,22 @@ class multiple_strategy:
         prices_indexed.index = pd.to_datetime(prices_indexed.index)
         return round(prices_indexed.sort_index(),3).dropna()
     
-def asset_perf_contribution(start_date,end_date,asset_price_data=pd.DataFrame,portfolio = pd.Series):
+def asset_perf_contribution(start_date, end_date, asset_price_data=pd.DataFrame, portfolio=pd.Series):
     '''
     Performance contribution by asset
     '''
-    pct = np.log(1+asset_price_data.loc[start_date:end_date].pct_change())
-    chg = (np.exp(pct.cumsum())-1).iloc[-1]
-    asset_contribution = chg.loc[portfolio.index] * portfolio
+    # Calculate percentage change
+    pct_change = asset_price_data.loc[start_date:end_date].pct_change()
+    
+    # Calculate log returns
+    log_returns = np.log(1 + pct_change)
+    
+    # Calculate cumulative returns
+    cumulative_returns = np.exp(log_returns.cumsum()) - 1
+    
+    # Calculate asset contribution
+    asset_contribution = cumulative_returns.iloc[-1].loc[portfolio.index] * portfolio
+    
     return asset_contribution
 
 def seasonality(price_data=pd.DataFrame,reb_freq=int):
