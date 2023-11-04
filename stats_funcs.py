@@ -117,7 +117,7 @@ def calc_max_dd(balance: pd.Series) -> float:
         logging.exception(f'ERROR Calc Max DD | {e}')
 
 def calc_losing_streak(balance:pd.Series) -> int:
-    balance_pct = balance.pct_change()
+    balance_pct = balance.pct_change(fill_method=None)
     try:
         # Calculate Maximum Losing Streak
         current_streak = 0
