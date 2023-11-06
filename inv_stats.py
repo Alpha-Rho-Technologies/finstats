@@ -180,7 +180,7 @@ def asset_perf_contribution(start_date, end_date, asset_price_data=pd.DataFrame,
     return asset_contribution
 
 def seasonality(price_data=pd.DataFrame,reb_freq=int):
-    df_pct = np.log(1+price_data.resample(f'{reb_freq}M').last().pct_change())
+    df_pct = np.log(1+price_data.resample(f'{reb_freq}M').last().pct_change(fill_method=None))
     df = np.exp(df_pct.groupby(df_pct.index.month).describe())-1
     
     months = []
