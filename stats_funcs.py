@@ -5,7 +5,7 @@ import logging
 
 def cal_geo_mean(balance:pd.Series):
     try:
-        geo_mean = np.exp(np.log(1+balance.pct_change()).mean()) - 1
+        geo_mean = np.exp(np.log(1+balance.pct_change(fill_method=None)).mean()) - 1
         return geo_mean
     
     except Exception as e:
@@ -13,7 +13,7 @@ def cal_geo_mean(balance:pd.Series):
 
 def calc_corr(balance:pd.Series,bm_balance:pd.Series):
     try:
-        corr = balance.pct_change().corr(bm_balance.pct_change())
+        corr = balance.pct_change(fill_method=None).corr(bm_balance.pct_change(fill_method=None))
         return corr
     
     except Exception as e:
@@ -21,7 +21,7 @@ def calc_corr(balance:pd.Series,bm_balance:pd.Series):
 
 def cal_geo_std(balance:pd.Series):
     try:
-        geo_std = np.exp(np.log(1+balance.pct_change()).std()) - 1
+        geo_std = np.exp(np.log(1+balance.pct_change(fill_method=None)).std()) - 1
         return geo_std
     
     except Exception as e:
@@ -29,7 +29,7 @@ def cal_geo_std(balance:pd.Series):
 
 def calc_downside_dev(balance:pd.Series):
     try:
-        log_pct = np.log(1+balance.pct_change())
+        log_pct = np.log(1+balance.pct_change(fill_method=None))
         mean = log_pct.mean()
         dowside_dev = np.exp(log_pct[log_pct<mean].std())-1
         return dowside_dev
@@ -39,7 +39,7 @@ def calc_downside_dev(balance:pd.Series):
 
 def calc_pos_returns_pct(balance:pd.Series):
     try:
-        bal_pct = balance.pct_change()
+        bal_pct = balance.pct_change(fill_method=None)
         pos = bal_pct[bal_pct>0].count()/bal_pct.count()
         return pos
     
@@ -49,7 +49,7 @@ def calc_pos_returns_pct(balance:pd.Series):
 def calc_es(balance:pd.Series,level = 99):
     try:
         percentail = 1 - level/100
-        pct = balance.pct_change()
+        pct = balance.pct_change(fill_method=None)
         es_99 = pct.quantile(percentail)
         return es_99
     
@@ -58,7 +58,7 @@ def calc_es(balance:pd.Series,level = 99):
 
 def calc_max_return(balance:pd.Series):
     try:
-        pct = balance.pct_change()
+        pct = balance.pct_change(fill_method=None)
         max = pct.max()
         return max
     
@@ -67,7 +67,7 @@ def calc_max_return(balance:pd.Series):
 
 def calc_min_return(balance:pd.Series):
     try:
-        pct = balance.pct_change()
+        pct = balance.pct_change(fill_method=None)
         min = pct.min()
         return min
     
@@ -184,15 +184,15 @@ def calc_recovery(balance:pd.Series) -> int:
 def calc_info_ratio(balance:pd.Series,bm_balance:pd.Series,log_returns = True) -> float:
     try:
         if log_returns:
-            balance_pct = np.log(1+balance.pct_change())
-            bm_balance_pct = np.log(1+bm_balance.pct_change())
+            balance_pct = np.log(1+balance.pct_change(fill_method=None))
+            bm_balance_pct = np.log(1+bm_balance.pct_change(fill_method=None))
             outperf_bm = balance_pct - bm_balance_pct
             outperf_mean = np.exp(outperf_bm.mean())-1
             outperf_std = np.exp(outperf_bm.std())-1
         
         else:
-            balance_pct = balance.pct_change()
-            bm_balance_pct = bm_balance.pct_change()
+            balance_pct = balance.pct_change(fill_method=None)
+            bm_balance_pct = bm_balance.pct_change(fill_method=None)
             outperf_bm = balance_pct - bm_balance_pct
             outperf_mean = outperf_bm.mean()
             outperf_std = outperf_bm.std()
@@ -210,15 +210,15 @@ def calc_beta_alpha(balance,bm_balance,log_returns=True):
 
     try:
         if log_returns:
-            balance_pct = np.log(1+balance.pct_change())
-            bm_balance_pct = np.log(1+bm_balance.pct_change())
+            balance_pct = np.log(1+balance.pct_change(fill_method=None))
+            bm_balance_pct = np.log(1+bm_balance.pct_change(fill_method=None))
             linreg = lr(bm_balance_pct,balance_pct)
             beta = linreg[0]
             alpha = np.exp(linreg[1])-1
         
         else:
-            balance_pct = balance.pct_change()
-            bm_balance_pct = bm_balance.pct_change()
+            balance_pct = balance.pct_change(fill_method=None)
+            bm_balance_pct = bm_balance.pct_change(fill_method=None)
             linreg = lr(bm_balance_pct,balance_pct)
             beta = linreg[0]
             alpha = linreg[1]

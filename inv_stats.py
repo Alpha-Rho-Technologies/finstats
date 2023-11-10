@@ -110,7 +110,7 @@ class strategy_stats:
         '''
         try:
             monthly_balance = self.balance.groupby(pd.Grouper(freq='M')).last()
-            df = monthly_balance.pct_change().to_frame()
+            df = monthly_balance.pct_change(fill_method=None).to_frame()
             df.index = pd.to_datetime(df.index)
 
             # set year and month columns
@@ -152,7 +152,7 @@ class multiple_strategy:
     
     def indexed_returns(self,freq='M'):
     
-        pct_df = self.apd.resample(freq).last().pct_change()
+        pct_df = self.apd.resample(freq).last().pct_change(fill_method=None)
         
         prices_indexed = 100*np.exp(np.log(1+pct_df).cumsum())
         
@@ -166,7 +166,7 @@ def asset_perf_contribution(start_date, end_date, asset_price_data=pd.DataFrame,
     Performance contribution by asset
     '''
     # Calculate percentage change
-    pct_change = asset_price_data.loc[start_date:end_date].pct_change()
+    pct_change = asset_price_data.loc[start_date:end_date].pct_change(fill_method=None)
     
     # Calculate log returns
     log_returns = np.log(1 + pct_change)
