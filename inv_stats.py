@@ -133,7 +133,8 @@ class strategy_stats:
 
 class multiple_strategy:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
-        self.apd = asset_price_data.loc[start_date:end_date].dropna(axis=1)
+        raw_apd = asset_price_data.loc[start_date:end_date]
+        self.apd = raw_apd.dropna(axis=1)
         self.start_date = start_date
         self.end_date = end_date
         self.bm_df = bm_data
