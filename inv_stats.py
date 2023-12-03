@@ -1,4 +1,4 @@
-from fin_stats.stats_funcs import *
+from fin_stats.funcs import *
 
 class strategy_stats:
     def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
@@ -6,7 +6,7 @@ class strategy_stats:
         Retrive relevant financial stats on a given balance data series.
         '''
         try:
-            # Ensure Dtatime index:
+            # Set Names:
             bm_name = bm_balance.name
             self.balance_name = balance.name
             raw_data = {
@@ -31,34 +31,42 @@ class strategy_stats:
     def get_stats(self,freq=str,annual_rf = 0.022) -> dict:
         try:
             # Standarize Rf:
-            rf = get_rf(rf=annual_rf,freq=freq)
+            rf = get_rf(rf=annual_rf,stats_freq=freq)
 
-            # Adjust frequency balance:
-            bal_adj = self.balance.resample(freq).last()
-            bm_bal_adj = self.bm_balance.resample(freq).last()
+            # Initialize stats object:
+            stats = fin_stats(balance = self.balance,
+                              bm_balance=self.bm_balance,
+                              freq=freq)
 
-            mean = cal_geo_mean(balance=bal_adj)
-            std = cal_geo_std(balance=bal_adj)
+            # Basic Stats:
+            mean = stats.mean_returns()
+            std = stats.returns_standard_deviation()
+
+            # Misc:
             excess_return = mean-rf
-            sharpe = excess_return/std
-
-            downside_dev = calc_downside_dev(balance=bal_adj)
-            sortino = excess_return/downside_dev
-            var_99 = mean-std*2.56
-            es_99 = calc_es(balance=bal_adj)
-            max_loss = calc_min_return(balance=bal_adj)
-            max = calc_max_return(balance=bal_adj)
-            pos = calc_pos_returns_pct(balance=bal_adj)
+            downside_dev = stats.downside_deviation()
+            pos = stats.positive_returns_pct()
             neg = 1-pos
-            losing_streak = calc_losing_streak(self.balance)
-            max_dd = calc_max_dd(self.balance)
-            recovery = calc_recovery(self.balance)
-            corr = calc_corr(balance=bal_adj, bm_balance= bm_bal_adj)
+            linreg = stats.beta_alpha()
+            
+            # Risk-adjusted performance ratios:
+            sharpe = excess_return/std
+            sortino = excess_return/downside_dev
+            
+            # Investment Risk Measures:
+            var_99 = mean-std*2.56
+            es_99 = stats.es()
+            max_loss = stats.min_return()
+            max = stats.max_return()
+            losing_streak = stats.losing_streak()
+            max_dd = stats.max_dd()
+            recovery = stats.recovery()
+            corr = stats.correlation()
 
             calmar_ratio = excess_return/abs(max_loss)
 
-            stats = {
-                'Stats Since': str(bal_adj.index[0].date()),
+            info = {
+                'Stats Since': str(self.balance.index[0].date()),
                 'Geometric Mean Return': mean,
                 'STD': std,
                 'Downside STD':downside_dev,
@@ -78,17 +86,12 @@ class strategy_stats:
                 }
                 
             # Stats only relevant to strategy:
-            stats['Information Ratio'] = calc_info_ratio(balance=bal_adj,
-                                                            bm_balance=bm_bal_adj)
-
-            linreg = calc_beta_alpha(balance=bal_adj,
-                                    bm_balance=bm_bal_adj)
-            stats['Beta'] = linreg['beta']
-            stats['Alpha'] = linreg['alpha']
-            stats['Jensen Alpha'] = calc_jensen_alpha(balance=bal_adj,
-                                                            bm_balance=bm_bal_adj,
-                                                            rf=rf,beta=linreg['beta'])
-            return stats
+            info['Information Ratio'] = stats.info_ratio()
+            info['Beta'] = linreg['beta']
+            info['Alpha'] = linreg['alpha']
+            info['Jensen Alpha'] = stats.jensen_alpha(rf=rf)
+            
+            return info
         
         except Exception as e:
             logging.exception(f'ERROR Retriving balance stats | {e}')
