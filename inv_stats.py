@@ -1,4 +1,5 @@
 from fin_stats.funcs import *
+import calendar
 
 class strategy_stats:
     def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
@@ -94,8 +95,7 @@ class strategy_stats:
             return info
         
         except Exception as e:
-            logging.exception(f'ERROR Retriving balance stats | {e}')
-        
+            logging.exception(f'ERROR Retriving balance stats | {e}')    
         
     def df(self,freq=str):
         '''
