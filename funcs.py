@@ -147,46 +147,33 @@ class fin_stats:
         """
         Calculate the recovery period from the maximum drawdown in a given array.
 
-        Parameters:
-        - arr: List of equity values.
-
         Returns:
         - recovery_period: Number of steps to recover from the maximum drawdown. 
-                        Returns None if it never recovers.
+                           Returns None if it never recovers.
         """
         try:
             peak = self.balance.iloc[0]
             max_drawdown = 0
-            max_drawdown_peak = 0
+            drawdown_start_index = 0
 
             # Identify the maximum drawdown
-            for x in self.balance:
+            for index, x in enumerate(self.balance):
                 if x > peak:
                     peak = x
-
                 current_drawdown = (peak - x) / peak
                 if current_drawdown > max_drawdown:
                     max_drawdown = current_drawdown
-                    max_drawdown_peak = peak
+                    drawdown_start_index = index
 
             # Calculate the recovery period
-            recovery_period = None
-            if max_drawdown > 0:  # Check to prevent division by zero
-                drawdown_started = False
-                steps_after_trough = 0
+            if max_drawdown == 0:
+                return None  # No drawdown occurred
 
-                for x in self.balance:
-                    if x == max_drawdown_peak and not drawdown_started:
-                        drawdown_started = True
+            for recovery_index, x in enumerate(self.balance[drawdown_start_index:], start=drawdown_start_index):
+                if x >= peak:
+                    return recovery_index - drawdown_start_index
 
-                    elif drawdown_started and x >= max_drawdown_peak:
-                        recovery_period = steps_after_trough
-                        break
-
-                    elif drawdown_started:
-                        steps_after_trough += 1
-
-            return recovery_period
+            return None  # Never recovers
         except Exception as e:
             logging.exception(f'ERROR calculating Recovery Max DD | {e}')
 
