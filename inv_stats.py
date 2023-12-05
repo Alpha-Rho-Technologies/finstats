@@ -128,7 +128,7 @@ class strategy_stats:
             pivot['Yearly Returns'] = np.exp(np.log(1+pivot).sum(axis=1))-1
 
             # Add Monthly AVG:
-            pivot.loc['Geometric Average'] = np.exp(np.log(1+pivot).mean())-1
+            pivot.loc['Annualized Returns'] = np.exp(np.log(1+pivot).mean())-1
             return round(pivot,6)
         
         except Exception as e:
@@ -137,7 +137,7 @@ class strategy_stats:
 class multiple_strategy:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
         raw_apd = asset_price_data.loc[start_date:end_date]
-        self.apd = raw_apd.dropna(axis=1)
+        self.apd = raw_apd.dropna(axis=1).ffill()
         self.start_date = start_date
         self.end_date = end_date
         self.bm_df = bm_data
