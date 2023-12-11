@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 
 bal_freq_standarizer = {
-    'D': {'M': 21, '2M': 42, '3M': 63, 'Y':252}, 
+    'D': {'M': 30, '2M': 60, '3M': 90, 'Y':360}, # Resampled data in daily freq and ffill
     'M': {'M': 1, '2M': 2, '3M': 3, 'Y':12},
     'W': {'M': 4, '2M': 8, '3M': 12, 'Y':52},
     }
