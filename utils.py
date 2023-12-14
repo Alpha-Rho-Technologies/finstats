@@ -3,8 +3,8 @@ import pandas as pd
 
 # Standarize balance frequency with stats frequency:
 bal_freq_standarizer = {
-    'B': {'M': 21, '2M': 42, '3M': 63, '4M':84, 'Y':252},
-    'D': {'M': 30, '2M': 60, '3M': 90, '4M':120, 'Y':360}, # If portfolio contain crypto
+    'B': {'D':1,'M': 21, '2M': 42, '3M': 63, '4M':84, 'Y':252},
+    'D': {'D':1,'M': 30, '2M': 60, '3M': 90, '4M':120, 'Y':360}, # If portfolio contain crypto
     'M': {'M': 1, '2M': 2, '3M': 3, '4M':4, 'Y':12},
     'W': {'M': 4, '2M': 8, '3M': 12, '4M':16, 'Y':52},
     }

@@ -76,7 +76,7 @@ class strategy_stats:
                 'Calmar Ratio':calmar_ratio,
                 'Max DD':max_dd,
                 'Max Return': max,
-                'Max Loss': max_loss,
+                'Min Return': max_loss,
                 'VAR 99':var_99,
                 'ES 99': es_99,
                 'Positive %':pos,
