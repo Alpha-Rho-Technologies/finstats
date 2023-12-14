@@ -1,4 +1,4 @@
-from fin_stats.funcs import *
+from fin_stats.src.core import *
 import calendar
 
 class strategy_stats:
