@@ -5,24 +5,32 @@ import logging
 
 class fin_stats:
 
-    def __init__(self,balance,freq,bm_balance:pd.Series=None) -> None:
-        try:
-            # Check balance frequency:
-            bal_freqs = []
-            for bal in [balance,bm_balance]:
-                balance_freq = check_balance_frequency(bal)
-                bal_freqs.append(balance_freq)
-            bal_freq_check = all(value == bal_freqs[0] for value in bal_freqs)
-            if not bal_freq_check:
-                raise ValueError('Balance and Benchmark balance have a different balance frequency')
+    def __init__(self,balance:pd.Series,stats_freq:str,bm_balance:pd.Series=None) -> None:
+        """
+        Initialize the FinStats object with financial data and calculate relevant statistics.
 
-            stats_freq = bal_freq_standarizer[balance_freq][freq]
+        Parameters:
+        balance (pd.Series): A Pandas Series representing the balance of an investment over time.
+        stats_freq (str): Frequency string to define the periodicity for calculating returns.
+        bm_balance (pd.Series, optional): A Pandas Series representing the benchmark balance over time. Defaults to None.
+
+        The constructor tries to calculate various statistics such as returns and logarithmic returns for both 
+        the balance and the benchmark balance (if provided). If any error occurs during these calculations, 
+        it logs the exception with a descriptive message.
+        """
+        try:
+            stats_freq = get_stats_freq(balance=balance,
+                                        bm_balance=bm_balance,
+                                        freq=stats_freq)
+            
             self.balance = balance
-            self.bm_balance = bm_balance
-            self.returns = balance.pct_change(stats_freq,fill_method=None)
+            self.returns = balance.pct_change(stats_freq, fill_method=None)
             self.log_returns = np.log(1 + self.returns)
-            self.bm_returns = bm_balance.pct_change(stats_freq,fill_method=None)
-            self.bm_log_returns = np.log(1 + self.bm_returns)
+            
+            if bm_balance is not None:
+                self.bm_balance = bm_balance
+                self.bm_returns = bm_balance.pct_change(stats_freq, fill_method=None)
+                self.bm_log_returns = np.log(1 + self.bm_returns)
         
         except Exception as e:
             logging.exception(f'Failed to Initialize fin_stats | {e}')

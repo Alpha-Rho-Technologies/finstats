@@ -37,7 +37,7 @@ class strategy_stats:
             # Initialize stats object:
             stats = fin_stats(balance = self.balance,
                               bm_balance=self.bm_balance,
-                              freq=freq)
+                              stats_freq=freq)
 
             # Basic Stats:
             mean = stats.mean_returns()
@@ -137,7 +137,7 @@ class strategy_stats:
 class multiple_strategy:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
         raw_apd = asset_price_data.loc[start_date:end_date]
-        self.apd = raw_apd.dropna(axis=1).ffill()
+        self.apd = raw_apd.ffill().dropna(axis=1)
         self.start_date = start_date
         self.end_date = end_date
         self.bm_df = bm_data
