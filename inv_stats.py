@@ -7,24 +7,19 @@ class strategy_stats:
         Retrive relevant financial stats on a given balance data series.
         '''
         try:
-            # Set Names:
-            bm_name = bm_balance.name
-            self.balance_name = balance.name
-            raw_data = {
-                bm_name:bm_balance,
-                self.balance_name:balance
-            }
+            raw_data = [bm_balance,balance]
 
             formatted_data = {}
-            for name,data in raw_data.items():
+            for data in raw_data:
+                name = data.name
+
                 # Adjust date:
-                data.index = pd.to_datetime(data.index)
+                check_data_index(data)
                 data = data.loc[start_date:end_date]
                 formatted_data[name] = data
             
-
-            self.balance = formatted_data[self.balance_name]
-            self.bm_balance = formatted_data[bm_name]
+            self.balance = formatted_data[balance.name]
+            self.bm_balance = formatted_data[bm_balance.name]
         
         except Exception as e:
             logging.exception(f'ERROR initializing strategy stats | {e}')
@@ -44,10 +39,10 @@ class strategy_stats:
             std = stats.returns_standard_deviation()
 
             # Misc:
-            excess_return = mean-rf
+            excess_return = mean - rf
             downside_dev = stats.downside_deviation()
             pos = stats.positive_returns_pct()
-            neg = 1-pos
+            neg = 1 - pos
             linreg = stats.beta_alpha()
             
             # Risk-adjusted performance ratios:
@@ -55,7 +50,7 @@ class strategy_stats:
             sortino = excess_return/downside_dev
             
             # Investment Risk Measures:
-            var_99 = mean-std*2.56
+            var_99 = mean - std * 2.56
             es_99 = stats.es()
             max_loss = stats.min_return()
             max = stats.max_return()
@@ -137,7 +132,7 @@ class strategy_stats:
 class multiple_strategy:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
         raw_apd = asset_price_data.loc[start_date:end_date]
-        self.apd = raw_apd.ffill().dropna(axis=1)
+        self.apd = format_raw_data(raw_data=raw_apd)
         self.start_date = start_date
         self.end_date = end_date
         self.bm_df = bm_data

@@ -21,6 +21,33 @@ rf_standarizer = {
   'W': 52
 }
 
+def check_data_index(data):
+    """
+    Ensures that the input data is in datetime format. Converts it to datetime if it is not.
+    Raises an error if conversion is not possible.
+    
+    Parameters:
+    data (various): The data to be checked or converted.
+
+    Returns:
+    pandas.DatetimeIndex: Data in datetime format.
+    """
+    if isinstance(data.index, pd.DatetimeIndex):
+        return None
+    else:
+        try:
+            data.index = pd.to_datetime(data.index)
+        except ValueError:
+            raise ValueError("Data cannot be converted to datetime format. Ensure data index is in datetime format.")
+
+def format_raw_data(raw_data:pd.DataFrame):
+    # Check NaN Values:
+    null_val = raw_data.isna().any()
+    check = len(null_val[null_val==True]) == 0
+    if not check:
+        logging.error('Multiple Strategy Stats | NaN Values found in asset price data')
+    return raw_data.ffill().dropna(axis=1)
+
 def get_data_frequency(df: pd.Series):
     """
     Check if the DataFrame's index has a frequency set. 
