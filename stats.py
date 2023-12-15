@@ -31,8 +31,8 @@ class strategy_stats:
 
             # Initialize stats object:
             stats = fin_stats(balance = self.balance,
-                              bm_balance=self.bm_balance,
-                              stats_freq=freq)
+                              bm_balance = self.bm_balance,
+                              stats_freq = freq)
 
             # Basic Stats:
             mean = stats.mean_returns()
@@ -64,8 +64,8 @@ class strategy_stats:
             info = {
                 'Stats Since': str(self.balance.index[0].date()),
                 'Geometric Mean Return': mean,
-                'STD': std,
-                'Downside STD':downside_dev,
+                'Standard Deviation': std,
+                'Downside Standard Deviation':downside_dev,
                 'Sharpe Ratio':sharpe,
                 'Sortino Ratio':sortino,
                 'Calmar Ratio':calmar_ratio,
