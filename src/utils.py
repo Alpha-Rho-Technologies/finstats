@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+from scipy.stats import linregress
 
 # Standarize balance frequency with stats frequency:
 bal_freq_standarizer = {
@@ -91,3 +92,21 @@ def get_rf(rf,stats_freq):
     
     except Exception as e:
         logging.exception(f'ERROR Standarizing Rf | {e}')
+
+def lr(x:pd.Series,y:pd.Series):
+    '''linear regression model using pandas dataframes as input'''
+    df = pd.concat([x,y],axis=1).dropna()
+    return linregress(df.iloc[:,0],df.iloc[:,1])
+
+def remove_outliers(data:pd.DataFrame, threshold=1.5):
+    # Calculate IQR
+    Q1 = data.quantile(0.25)
+    Q3 = data.quantile(0.75)
+    IQR = Q3 - Q1
+    
+    # Define bounds for outliers
+    lower_bound = Q1 - threshold * IQR
+    upper_bound = Q3 + threshold * IQR
+    
+    # Filter out the outliers
+    return data[(data > lower_bound) & (data < upper_bound)]
