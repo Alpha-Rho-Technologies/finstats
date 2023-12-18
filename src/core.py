@@ -1,5 +1,5 @@
 from art_utils.common_functions import lr,np,pd
-from fin_stats.src.utils import *
+from finstats.src.utils import *
 import datetime as dt
 import logging
 

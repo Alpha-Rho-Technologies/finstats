@@ -1,7 +1,7 @@
-from fin_stats.src.core import *
+from finstats.src.core import *
 import calendar
 
-class strategy_stats:
+class balance_stats:
     def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
         '''
         Retrive relevant financial stats on a given balance data series.
@@ -129,8 +129,11 @@ class strategy_stats:
         except Exception as e:
             logging.exception(f'ERROR Retriving Returns by month | {e}')
 
-class multiple_strategy:
+class mbs:
     def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
+        '''
+        Multiple Balance Stats calculator
+        '''
         raw_apd = asset_price_data.loc[start_date:end_date]
         self.apd = format_raw_data(raw_data=raw_apd)
         self.start_date = start_date
@@ -141,7 +144,7 @@ class multiple_strategy:
         stats = []
         for asset in self.apd.columns:
             balance = self.apd[asset]
-            stats_series = strategy_stats(balance=balance,
+            stats_series = balance_stats(balance=balance,
                         start_date=self.start_date,
                         end_date=self.end_date,
                         bm_balance=self.bm_df).df(freq=freq)
