@@ -3,10 +3,19 @@ import datetime as dt
 import calendar
 
 class balance_stats:
-    def __init__(self,balance:pd.Series,start_date:dt.date,end_date:dt.date,bm_balance:pd.Series) -> None:
+    def __init__(self,balance:pd.Series,bm_balance:pd.Series,start_date:dt.date,end_date:dt.date) -> None:
         '''
-        Retrive relevant financial stats on a given balance data series.
+        Initialize an instance of the balance_stats class.
+
+        This class is designed to analyze and retrieve financial statistics based on a given balance data series. It compares the provided balance data against a benchmark balance over a specified date range.
+
+        Parameters:
+        balance (pd.Series): A pandas Series object representing the balance data to be analyzed.
+        start_date (dt.date): The starting date of the period for which the balance statistics are to be calculated.
+        end_date (dt.date): The ending date of the period for which the balance statistics are to be calculated.
+        bm_balance (pd.Series): A pandas Series object representing the benchmark balance data for comparison.
         '''
+
         try:
             raw_data = [bm_balance,balance]
 
@@ -26,6 +35,21 @@ class balance_stats:
             logging.exception(f'ERROR initializing strategy stats | {e}')
 
     def get_stats(self,freq=str,annual_rf = 0.022) -> dict:
+        '''
+        Calculate and return various financial statistics based on the initialized balance data.
+
+        This method computes key financial metrics such as return rates, volatility, and risk-adjusted returns over the specified frequency. The calculations take into account a predefined annual risk-free rate.
+
+        Parameters:
+        freq (str): The frequency at which the statistics should be calculated. Common values include 'daily', 'monthly', or 'yearly'.
+        annual_rf (float, optional): The annual risk-free rate used in the calculation of risk-adjusted returns. Default value is 0.022 (or 2.2%).
+
+        Returns:
+        dict: A dictionary containing the calculated financial statistics. Keys in the dictionary might include metrics such as 'total_return', 'volatility', and 'sharpe_ratio', among others, depending on the implementation.
+
+        Note:
+        The method assumes that the class has been properly initialized with the necessary balance data and benchmark balance data.
+        '''
         try:
             # Standarize Rf:
             rf = get_rf(rf=annual_rf,stats_freq=freq)
@@ -131,9 +155,23 @@ class balance_stats:
             logging.exception(f'ERROR Retriving Returns by month | {e}')
 
 class mbs:
-    def __init__(self,asset_price_data=pd.DataFrame,start_date=dt.date,end_date=dt.date,bm_data = pd.Series) -> None:
+    def __init__(self,asset_price_data=pd.DataFrame,bm_data = pd.Series,start_date=dt.date,end_date=dt.date) -> None:
         '''
-        Multiple Balance Stats calculator
+        Initialize an instance of the mbs (Multiple Balance Stats) class.
+
+        This class is designed for calculating various financial statistics across multiple assets. It uses provided asset price data, compares it against a benchmark data series, and performs analysis within a specified date range.
+
+        Parameters:
+        asset_price_data (pd.DataFrame): A pandas DataFrame containing the asset price data. Each column in the DataFrame represents a different asset, with rows corresponding to different dates.
+        start_date (dt.date): The starting date for the period over which the financial statistics are to be calculated.
+        end_date (dt.date): The ending date for the period over which the financial statistics are to be calculated.
+        bm_data (pd.Series): A pandas Series representing the benchmark data for comparison with the asset price data.
+
+        Returns:
+        None: This constructor method initializes the class instance but does not return any value.
+
+        Note:
+        The asset price data and the benchmark data should be aligned in terms of dates, with each row corresponding to the same date across all data series.
         '''
         raw_apd = asset_price_data.loc[start_date:end_date]
         self.apd = format_raw_data(raw_data=raw_apd)
@@ -142,6 +180,20 @@ class mbs:
         self.bm_df = bm_data
     
     def stats_df(self,freq):
+        '''
+        Calculate and return a DataFrame of financial statistics for multiple assets at the specified frequency.
+
+        This method processes the asset price data initialized in the mbs class instance and computes key financial metrics for each asset at the given frequency. The statistics are calculated based on the price data and benchmark data provided during class initialization.
+
+        Parameters:
+        freq (str): The frequency at which the financial statistics should be calculated. This parameter determines the time intervals for the calculations. Common values include 'B', 'D', 'M' or 'Y'.
+
+        Returns:
+        pd.DataFrame: A pandas DataFrame where each column represents a different financial metric calculated for each asset, and each row corresponds to the specified frequency intervals. The specific metrics included in the DataFrame will depend on the implementation but may include returns, volatility, and other relevant financial measures.
+
+        Note:
+        This method assumes that the mbs class has been properly initialized with the necessary asset price data and benchmark data.
+        '''
         stats = []
         for asset in self.apd.columns:
             balance = self.apd[asset]
@@ -153,7 +205,21 @@ class mbs:
         
         return pd.concat(stats,axis=1)
     
-    def indexed_returns(self,freq='M'):
+    def indexed_returns(self,freq='B'):
+        '''
+        Calculate and return indexed returns for the asset prices over the specified frequency.
+
+        This method computes the percentage change in asset prices at the given frequency, then converts these to indexed returns. The indexed returns are normalized to a base value of 100 at the start date. This allows for an easy comparison of asset performance over time.
+
+        Parameters:
+        freq (str, optional): The frequency at which the returns are calculated. Defaults to 'B' (business daily). Other common frequencies include 'W' (weekly), 'M' (monthly), 'Q' (quarterly), etc.
+
+        Returns:
+        pd.DataFrame: A pandas DataFrame containing the indexed returns of the assets. Each column represents an asset, and each row corresponds to a date. The DataFrame is sorted by date, with NaN values dropped, and the returns are rounded to three decimal places.
+
+        Note:
+        The method uses the asset price data (`apd`) that should already be present in the class instance. It assumes that the `apd` data is a pandas DataFrame with dates as the index and asset prices in the columns.
+        '''
     
         pct_df = self.apd.resample(freq).last().pct_change(fill_method=None)
         
