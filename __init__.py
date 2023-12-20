@@ -2,10 +2,10 @@ from finstats.src.core import *
 import datetime as dt
 import calendar
 
-class balance_stats:
+class sbs:
     def __init__(self,balance:pd.Series,bm_balance:pd.Series,start_date:dt.date,end_date:dt.date) -> None:
         '''
-        Initialize an instance of the balance_stats class.
+        Initialize an instance of the single balance stats (sbs) class.
 
         This class is designed to analyze and retrieve financial statistics based on a given balance data series. It compares the provided balance data against a benchmark balance over a specified date range.
 
@@ -197,7 +197,7 @@ class mbs:
         stats = []
         for asset in self.apd.columns:
             balance = self.apd[asset]
-            stats_series = balance_stats(balance=balance,
+            stats_series = sbs(balance=balance,
                         start_date=self.start_date,
                         end_date=self.end_date,
                         bm_balance=self.bm_df).df(freq=freq)
@@ -248,12 +248,31 @@ def asset_perf_contribution(start_date, end_date, asset_price_data=pd.DataFrame,
     
     return asset_contribution
 
-def seasonality(price_data=pd.DataFrame,reb_freq=int):
-    df_pct = np.log(1+price_data.resample(f'{reb_freq}M').last().pct_change(fill_method=None))
-    df = np.exp(df_pct.groupby(df_pct.index.month).describe())-1
-    
-    months = []
-    for month in df.index:
-        months.append(list(calendar.month_name)[month])
-    df.index = months
-    return df
+def seasonality(price_data:pd.Series):
+    """
+    Analyzes the seasonality in financial price data by calculating and summarizing 
+    the monthly percentage changes.
+
+    Parameters:
+    price_data (pd.Series): A Pandas Series object with timestamps as index and 
+                            financial prices as values.
+
+    Returns:
+    pd.DataFrame: A DataFrame where each row corresponds to a month, and columns 
+                  contain descriptive statistics of the monthly percentage changes.
+    """
+    # Ensure price_data is a Pandas Series
+    if not isinstance(price_data, pd.Series):
+        raise ValueError("price_data must be a pandas Series")
+
+    # Calculate monthly percentage change
+    df_pct = np.log(1 + price_data.resample('M').last().pct_change())
+
+    # Group by month and calculate descriptive statistics
+    monthly_stats = np.exp(df_pct.groupby(df_pct.index.month).describe()) - 1
+
+    # Replace numerical index with month names
+    month_names = [calendar.month_name[i] for i in monthly_stats.index]
+    monthly_stats.index = month_names
+
+    return monthly_stats
