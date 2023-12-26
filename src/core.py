@@ -80,7 +80,7 @@ class fin_stats:
 
     def positive_returns_pct(self):
         try:
-            pos = self.returns[self.returns>0].count()/self.returns.count()
+            pos = self.returns[self.returns>=0].count()/self.returns.count()
             return pos
         
         except Exception as e:
