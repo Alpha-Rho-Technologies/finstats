@@ -55,20 +55,20 @@ class sbs:
             rf = get_rf(rf=annual_rf,stats_freq=freq)
 
             # Initialize stats object:
-            stats = fin_stats(balance = self.balance,
-                              bm_balance = self.bm_balance,
-                              stats_freq = freq)
+            self.stats = fin_stats(balance = self.balance,
+                                    bm_balance = self.bm_balance,
+                                    stats_freq = freq)
 
             # Basic Stats:
-            mean = stats.mean_returns()
-            std = stats.returns_standard_deviation()
+            mean = self.stats.mean_returns()
+            std = self.stats.returns_standard_deviation()
 
             # Misc:
             excess_return = mean - rf
-            downside_dev = stats.downside_deviation()
-            pos = stats.positive_returns_pct()
+            downside_dev = self.stats.downside_deviation()
+            pos = self.stats.positive_returns_pct()
             neg = 1 - pos
-            linreg = stats.beta_alpha()
+            linreg = self.stats.beta_alpha()
             
             # Risk-adjusted performance ratios:
             sharpe = excess_return/std
@@ -76,13 +76,13 @@ class sbs:
             
             # Investment Risk Measures:
             var_99 = mean - std * 2.56
-            es_99 = stats.es()
-            max_loss = stats.min_return()
-            max = stats.max_return()
-            losing_streak = stats.losing_streak()
-            max_dd = stats.max_dd()
-            recovery = stats.recovery()
-            corr = stats.correlation()
+            es_99 = self.stats.es()
+            max_loss = self.stats.min_return()
+            max = self.stats.max_return()
+            losing_streak = self.stats.losing_streak()
+            max_dd = self.stats.max_dd()
+            recovery = self.stats.recovery()
+            corr = self.stats.correlation()
 
             calmar_ratio = excess_return/abs(max_loss)
 
@@ -107,10 +107,10 @@ class sbs:
                 }
                 
             # Stats only relevant to strategy:
-            info['Information Ratio'] = stats.info_ratio()
+            info['Information Ratio'] = self.stats.info_ratio()
             info['Beta'] = linreg['beta']
             info['Alpha'] = linreg['alpha']
-            info['Jensen Alpha'] = stats.jensen_alpha(rf=rf)
+            info['Jensen Alpha'] = self.stats.jensen_alpha(rf=rf)
             
             return info
         
@@ -153,6 +153,12 @@ class sbs:
         
         except Exception as e:
             logging.exception(f'ERROR Retriving Returns by month | {e}')
+    
+    def rolling_correlation(self,periods:int):
+        bal_pct = self.balance.pct_change()
+        bm_pct = self.bm_balance.pct_change()
+        
+        return bal_pct.rolling(periods).corr(bm_pct)
 
 class mbs:
     def __init__(self,asset_price_data=pd.DataFrame,bm_data = pd.Series,start_date=dt.date,end_date=dt.date) -> None:
