@@ -51,15 +51,21 @@ def format_raw_data(raw_data:pd.DataFrame):
 
 def get_data_frequency(df: pd.Series):
     """
-    Check if the DataFrame's index has a frequency set. 
-    Raise an error if the frequency is not set.
+    Check the Series's index frequency and infer it if not set. 
+    Raise an error if the frequency cannot be inferred.
 
     Parameters:
-    df (pd.DataFrame): DataFrame to check the index frequency of.
+    df (pd.Series): Series to check and infer the index frequency of.
     """
     freq = df.index.freq
+
+    # If frequency is not set, try to infer it
     if freq is None:
-        raise ValueError("The DataFrame's index does not have a frequency set. Please use df.resample() to set a frequency.")
+        inferred_freq = pd.infer_freq(df.index)
+        if inferred_freq is None:
+            raise ValueError("Unable to infer the Series's index frequency. Please set a frequency.")
+        else:
+            return inferred_freq
     else:
         return freq.freqstr
     

@@ -227,7 +227,7 @@ class fin_stats:
         try:
             if geometric:
                 beta = self.beta_alpha(geometric=True)['beta']
-                bm_mean_returns = np.exp(np.log(1+self.bm_log_returns).mean())-1
+                bm_mean_returns = np.exp(self.bm_log_returns.mean())-1
                 mean_returns = self.mean_returns(geometric=True)
             else:
                 beta = self.beta_alpha(geometric=False)['beta']
