@@ -3,7 +3,7 @@ import datetime as dt
 import calendar
 
 class sbs:
-    def __init__(self,balance:pd.Series,bm_balance:pd.Series,start_date:dt.date,end_date:dt.date) -> None:
+    def __init__(self,balance:pd.Series,bm_balance:pd.Series,start_date:dt.date=None,end_date:dt.date=None) -> None:
         '''
         Initialize an instance of the single balance stats (sbs) class.
 
@@ -17,8 +17,11 @@ class sbs:
         '''
 
         try:
-            raw_data = [bm_balance,balance]
+            # set dates:
+            if start_date is None and end_date is None:
+                start_date,end_date = default_dates(balance)
 
+            raw_data = [bm_balance,balance]
             formatted_data = {}
             for data in raw_data:
                 name = data.name

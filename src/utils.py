@@ -22,6 +22,12 @@ rf_standarizer = {
   'W': 52
 }
 
+def default_dates(dta):
+    dta = dta.sort_index()
+    start_date = dta.index[0]
+    end_date = dta.index[-1]
+    return start_date,end_date
+
 def check_data_index(data):
     """
     Ensures that the input data is in datetime format. Converts it to datetime if it is not.
