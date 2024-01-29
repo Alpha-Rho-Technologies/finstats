@@ -237,7 +237,7 @@ class mbs:
         # Add initial index:
         prices_indexed.loc[self.start_date] = 100
         prices_indexed.index = pd.to_datetime(prices_indexed.index)
-        return round(prices_indexed.sort_index(),3).dropna()
+        return round(prices_indexed.sort_index(),2).dropna()
     
 def asset_perf_contribution(start_date, end_date, asset_price_data=pd.DataFrame, portfolio=pd.Series):
     '''
