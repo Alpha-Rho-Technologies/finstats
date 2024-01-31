@@ -130,7 +130,7 @@ class sbs:
         except Exception as e:
             logging.exception(f'ERROR Retriving Stats df | {e}')
 
-    def returns_by_month(self):
+    def returns_by_month(self,dropnan:bool):
         '''
         Returns monthly returns by year and month
         '''
@@ -146,6 +146,10 @@ class sbs:
             # create a pivot table to get the month-on-month price change
             pivot = pd.pivot_table(df,index='Year', columns='month', aggfunc='first')
             pivot.columns = list(calendar.month_name)[1:]
+
+            # Remove non-complete years:
+            if dropnan:
+                pivot.dropna(axis=0,inplace=True)
 
             # Add Yearly returns:
             pivot['Yearly Returns'] = np.exp(np.log(1+pivot).sum(axis=1))-1
