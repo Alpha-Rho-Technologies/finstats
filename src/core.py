@@ -111,6 +111,23 @@ class fin_stats:
         except Exception as e:
             logging.exception(f'ERROR calculating Min Return  | {e}')
 
+    def drawdown(self):
+        """
+        Calculate the drawdown of a time series of prices.
+        
+        Parameters:
+        prices (pd.Series): A pandas Series containing the price data.
+        
+        Returns:
+        pd.DataFrame: A DataFrame containing the drawdown calculations.
+        """
+        # Calculate the cumulative maximum
+        cumulative_max = self.balance.cummax()
+        # Calculate the drawdown
+        drawdown = (self.balance - cumulative_max) / cumulative_max
+        
+        return drawdown
+    
     def max_dd(self) -> float:
         """
         Calculates the maximum drawdown of a given balance series.
@@ -123,10 +140,7 @@ class fin_stats:
         """
         try:
             # Calculate Maximum Drawdown
-            running_max = self.balance.cummax()
-            drawdown = (self.balance - running_max) / running_max
-            max_drawdown = drawdown.min()
-
+            max_drawdown = self.drawdown().min()
             return max_drawdown
 
         except Exception as e:
