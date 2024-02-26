@@ -166,6 +166,17 @@ class sbs:
         bm_pct = self.bm_balance.pct_change()
         
         return bal_pct.rolling(periods).corr(bm_pct)
+    
+    def rolling_alpha(self,period):
+        alphas = {}
+        df = pd.concat([self.bm_balance.pct_change(),self.balance.pct_change()],axis=1).dropna()
+        for data in df.rolling(period):
+            if len(data) >= period:
+                date = data.index[-1]
+                alpha = lr(x=data.iloc[:,0],y=data.iloc[:,1])[1]
+                alphas[date] = alpha
+
+        return pd.Series(alphas)
 
 class mbs:
     def __init__(self,asset_price_data=pd.DataFrame,bm_data = pd.Series,start_date=dt.date,end_date=dt.date) -> None:
