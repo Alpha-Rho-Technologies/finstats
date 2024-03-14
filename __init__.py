@@ -161,9 +161,12 @@ class sbs:
         except Exception as e:
             logging.exception(f'ERROR Retriving Returns by month | {e}')
     
-    def rolling_correlation(self,periods:int):
+    def rolling_correlation(self,periods:int,pct=True):
         bal_pct = self.balance.pct_change()
-        bm_pct = self.bm_balance.pct_change()
+        if pct == True:
+            bm_pct = self.bm_balance.pct_change()
+        else:
+            bm_pct = self.bm_balance.diff()
         
         return bal_pct.rolling(periods).corr(bm_pct)
     
