@@ -249,8 +249,8 @@ class mbs:
         '''
     
         pct_df = self.apd.resample(freq).last().pct_change(fill_method=None)
-        
-        prices_indexed = 100*np.exp(np.log(1+pct_df).cumsum())
+        log_pct = np.log(1+pct_df)
+        prices_indexed = 100*np.exp(log_pct.cumsum())
         
         # Add initial index:
         prices_indexed.loc[self.start_date] = 100
