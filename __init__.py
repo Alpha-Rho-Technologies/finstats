@@ -155,8 +155,8 @@ class sbs:
             pivot['Yearly Returns'] = np.exp(np.log(1+pivot).sum(axis=1))-1
 
             # Add Monthly AVG:
-            pivot.loc['Annualized Returns'] = np.exp(np.log(1+pivot).mean())-1
-            return round(pivot,6)
+            pivot.loc['Geometric Average'] = np.exp(np.log(1+pivot).mean())-1
+            return round(pivot,4)
         
         except Exception as e:
             logging.exception(f'ERROR Retriving Returns by month | {e}')
