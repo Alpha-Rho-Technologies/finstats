@@ -4,7 +4,7 @@ import logging
 
 class fin_stats:
 
-    def __init__(self,balance:pd.Series,stats_freq:str,bm_balance:pd.Series=None) -> None:
+    def __init__(self,balance:pd.Series,stats_freq:str,rf:float,bm_balance:pd.Series=None) -> None:
         """
         Initialize the FinStats object with financial data and calculate relevant statistics.
 
@@ -22,6 +22,7 @@ class fin_stats:
                                         bm_balance=bm_balance,
                                         freq=stats_freq)
             
+            self.rf = rf
             self.balance = balance
             self.returns = balance.pct_change(stats_freq, fill_method=None)
             self.log_returns = np.log(1 + self.returns)
@@ -44,6 +45,7 @@ class fin_stats:
         
         except Exception as e:
             logging.exception(f'ERROR calculating mean returns | {e}')
+            return None
 
     def correlation(self):
         try:
@@ -52,6 +54,7 @@ class fin_stats:
         
         except Exception as e:
             logging.exception(f'ERROR calculating correlation | {e}')
+            return None
 
     def returns_standard_deviation(self,geometric = True):
         try:
@@ -63,6 +66,45 @@ class fin_stats:
         
         except Exception as e:
             logging.exception(f'ERROR calculating returns standard deviation | {e}')
+            return None
+    
+    def sharpe_ratio(self,geometric = True):
+        try:
+            if geometric:
+                mean = self.mean_returns()
+                std = self.returns_standard_deviation()
+                excess_return = mean-self.rf
+                sharpe_ratio = excess_return/std
+                
+            else:
+                mean = self.returns.mean()
+                std = self.returns.std()
+                excess_return = mean-self.rf
+                sharpe_ratio = excess_return/std
+            return sharpe_ratio
+        
+        except Exception as e:
+            logging.exception(f'ERROR calculating Sharpe Ratio | {e}')
+            return None
+
+    def sortino_ratio(self,geometric = True):
+        try:
+            if geometric:
+                mean = self.mean_returns()
+                downside_std = self.downside_deviation()
+                excess_return = mean-self.rf
+                sortino_ratio = excess_return/downside_std
+                
+            else:
+                mean = self.returns.mean()
+                downside_std = self.downside_deviation(geometric=False)
+                excess_return = mean-self.rf
+                sortino_ratio = excess_return/downside_std
+            return sortino_ratio
+        
+        except Exception as e:
+            logging.exception(f'ERROR calculating Sharpe Ratio | {e}')
+            return None
 
     def downside_deviation(self, geometric = True):
         try:
@@ -77,6 +119,7 @@ class fin_stats:
         
         except Exception as e:
             logging.exception(f'ERROR calculating Downside standard deviation | {e}')
+            return None
 
     def positive_returns_pct(self):
         try:
@@ -121,13 +164,17 @@ class fin_stats:
         Returns:
         pd.DataFrame: A DataFrame containing the drawdown calculations.
         """
-        # Calculate the cumulative maximum
-        cumulative_max = self.balance.cummax()
-        # Calculate the drawdown
-        drawdown = (self.balance - cumulative_max) / cumulative_max
+        try:
+            # Calculate the cumulative maximum
+            cumulative_max = self.balance.cummax()
+            # Calculate the drawdown
+            drawdown = (self.balance - cumulative_max) / cumulative_max
+            
+            return drawdown
+        except Exception as e:
+            logging.exception(f'ERROR calculating Max DD | {e}')
+            return None
         
-        return drawdown
-    
     def max_dd(self) -> float:
         """
         Calculates the maximum drawdown of a given balance series.
@@ -145,6 +192,7 @@ class fin_stats:
 
         except Exception as e:
             logging.exception(f'ERROR calculating Max DD | {e}')
+            return None
 
     def losing_streak(self) -> int:
         balance_pct = self.returns
@@ -218,6 +266,7 @@ class fin_stats:
             
         except Exception as e:
             logging.exception(f'ERROR calculating Info Ratio | {e}')
+            return None
 
     def beta_alpha(self,geometric=True):
 
@@ -236,6 +285,7 @@ class fin_stats:
             
         except Exception as e:
             logging.exception(f'ERROR calculating Info Ratio | {e}')
+            return None
 
     def jensen_alpha(self, rf:float, geometric = True) -> float:
         try:
@@ -254,3 +304,4 @@ class fin_stats:
         
         except Exception as e:
             logging.exception(f'ERROR calculating Jensen Alpha | {e}')
+            return None

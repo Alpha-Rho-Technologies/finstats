@@ -60,7 +60,7 @@ class sbs:
             # Initialize stats object:
             self.stats = fin_stats(balance = self.balance,
                                     bm_balance = self.bm_balance,
-                                    stats_freq = freq)
+                                    stats_freq = freq,rf=rf)
 
             # Basic Stats:
             mean = self.stats.mean_returns()
@@ -74,8 +74,8 @@ class sbs:
             linreg = self.stats.beta_alpha()
             
             # Risk-adjusted performance ratios:
-            sharpe = excess_return/std
-            sortino = excess_return/downside_dev
+            sharpe = self.stats.sharpe_ratio()
+            sortino = self.stats.sortino_ratio()
             
             # Investment Risk Measures:
             var_99 = mean - std * 2.56
