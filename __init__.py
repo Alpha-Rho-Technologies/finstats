@@ -67,7 +67,6 @@ class sbs:
             std = self.stats.returns_standard_deviation()
 
             # Misc:
-            excess_return = mean - rf
             downside_dev = self.stats.downside_deviation()
             pos = self.stats.positive_returns_pct()
             neg = 1 - pos
@@ -87,7 +86,7 @@ class sbs:
             recovery = self.stats.recovery()
             corr = self.stats.correlation()
 
-            calmar_ratio = excess_return/abs(max_loss)
+            calmar_ratio = self.stats.calmar_ratio()
 
             info = {
                 'Stats Since': str(self.balance.index[0].date()),
@@ -113,7 +112,7 @@ class sbs:
             info['Information Ratio'] = self.stats.info_ratio()
             info['Beta'] = linreg['beta']
             info['Alpha'] = linreg['alpha']
-            info['Jensen Alpha'] = self.stats.jensen_alpha(rf=rf)
+            info['Jensen Alpha'] = self.stats.jensen_alpha()
             
             return info
         

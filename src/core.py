@@ -103,7 +103,30 @@ class fin_stats:
             return sortino_ratio
         
         except Exception as e:
-            logging.exception(f'ERROR calculating Sharpe Ratio | {e}')
+            logging.exception(f'ERROR calculating Sortino Ratio | {e}')
+            return None
+        
+    def calmar_ratio(self,geometric = True):
+        try:
+            downside = self.min_return()
+            if downside < 0:
+                if geometric:
+                    mean = self.mean_returns()
+                    
+                    excess_return = mean-self.rf
+                    calmar_ratio = excess_return/downside
+                    
+                else:
+                    mean = self.returns.mean()
+                    downside = self.min_return()
+                    excess_return = mean-self.rf
+                    calmar_ratio = excess_return/downside
+                return abs(calmar_ratio)
+            else:
+                return np.nan
+        
+        except Exception as e:
+            logging.exception(f'ERROR calculating Calmar Ratio | {e}')
             return None
 
     def downside_deviation(self, geometric = True):
@@ -287,7 +310,7 @@ class fin_stats:
             logging.exception(f'ERROR calculating Info Ratio | {e}')
             return None
 
-    def jensen_alpha(self, rf:float, geometric = True) -> float:
+    def jensen_alpha(self, geometric = True) -> float:
         try:
             if geometric:
                 beta = self.beta_alpha(geometric=True)['beta']
@@ -298,8 +321,8 @@ class fin_stats:
                 bm_mean_returns = self.bm_returns.mean()
                 mean_returns = self.mean_returns(geometric=False)
                 
-            bm_excess_return = bm_mean_returns - rf
-            jensen_alpha = mean_returns - (rf + beta*bm_excess_return)
+            bm_excess_return = bm_mean_returns - self.rf
+            jensen_alpha = mean_returns - (self.rf + beta*bm_excess_return)
             return jensen_alpha
         
         except Exception as e:
