@@ -59,7 +59,7 @@ class fin_stats:
     def returns_standard_deviation(self,geometric = True):
         try:
             if geometric:
-                std = np.exp(np.log(1+self.log_returns).std()) - 1
+                std = np.exp(self.log_returns.std()) - 1
             else:
                 std = self.returns.std()
             return std
