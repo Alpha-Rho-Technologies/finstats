@@ -89,7 +89,7 @@ class sbs:
             calmar_ratio = self.stats.calmar_ratio()
 
             info = {
-                'Stats Since': str(self.balance.index[0].date()),
+                'Sample Dates': f'{str(self.balance.index[0].date())} to {str(self.balance.index[-1].date())}',
                 'Geometric Mean Return': mean,
                 'Standard Deviation': std,
                 'Downside Standard Deviation':downside_dev,
