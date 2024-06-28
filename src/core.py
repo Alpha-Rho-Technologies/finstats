@@ -98,8 +98,9 @@ class fin_stats:
             else:
                 mean = self.returns.mean()
                 downside_std = self.downside_deviation(geometric=False)
-                excess_return = mean-self.rf
+                excess_return = mean - self.rf
                 sortino_ratio = excess_return/downside_std
+            
             return sortino_ratio
         
         except Exception as e:
@@ -133,12 +134,16 @@ class fin_stats:
         try:
             if geometric:
                 mean = self.log_returns.mean()
-                dowside_dev = np.exp(self.log_returns[self.log_returns<mean].std())-1
+                excess_log_returns = self.log_returns - mean
+                downside_log_returns = excess_log_returns[excess_log_returns < 0]
+                downside_dev = np.exp(np.sqrt((downside_log_returns ** 2).mean())) - 1
             else:
                 mean = self.mean_returns(geometric=False)
-                dowside_dev = self.returns[self.returns<mean].std()
+                excess_returns = self.returns - mean
+                downside_returns = excess_returns[excess_returns < 0]
+                downside_dev = np.exp(np.sqrt((downside_returns ** 2).mean())) - 1
             
-            return dowside_dev
+            return downside_dev
         
         except Exception as e:
             logging.exception(f'ERROR calculating Downside standard deviation | {e}')
