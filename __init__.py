@@ -180,6 +180,30 @@ class sbs:
 
         return pd.Series(alphas)
 
+    def holding_period_prob(self):
+        probs = {}
+        frequencies = {
+            "1 Day": 1,
+            "1 Week": 5,
+            "1 Month": 21,
+            "3 Months": 21 * 3,
+            "6 Months": 21 * 6,
+            "9 Months": 21 * 9,
+            "1 Year": 252,
+            "3 Years": 252 * 3,
+            "5 Years": 252 * 5,
+            "10 Years": 252 * 10,
+            "15 Years": 252 * 15,
+            "20 Years": 252 * 20,
+            "30 Years": 252 * 30
+        }
+        for name,f in frequencies.items():
+            pct_data = self.balance.pct_change(f,fill_method=None)
+            pos = pct_data[pct_data>=0]
+            probs[name] = pos.count()/pct_data.count()
+        
+        return pd.Series(probs)
+
 class mbs:
     def __init__(self,asset_price_data=pd.DataFrame,bm_data = pd.Series,start_date=dt.date,end_date=dt.date) -> None:
         '''
