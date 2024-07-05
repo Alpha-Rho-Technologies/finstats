@@ -1,4 +1,5 @@
 from finstats.src.core import *
+from typing import Dict, Tuple
 import datetime as dt
 import calendar
 
@@ -203,6 +204,54 @@ class sbs:
             probs[name] = pos.count()/pct_data.count()
         
         return pd.Series(probs)
+    
+    def fwd_returns_stats(self, period:int) -> pd.DataFrame:
+        """
+        Calculate the probability and expected forward returns based on historical price data.
+
+        Args:
+        period (int): Number of returns per period tested. Eg: 252 = 1 Trading Year
+
+        Returns:
+        pd.DataFrame: DataFrame containing the probabilities and expected foward returns for a range of current returns.
+        """
+        # Calculate current and forward returns
+        current_increase = self.balance.pct_change(period).rename('Current')
+        fwd_returns = self.balance.pct_change(period).shift(-period).rename('Fwd Returns')
+
+        # Merge the data and drop missing values
+        merged_data = pd.concat([current_increase, fwd_returns], axis=1).dropna()
+
+        # Define a function to calculate the probability and expected return
+        def prob_pos(r: float) -> Tuple[float, float]:
+            if r > 0:
+                conditional_returns = merged_data[merged_data['Current'] >= r]['Fwd Returns']
+            else:
+                conditional_returns = merged_data[merged_data['Current'] <= r]['Fwd Returns']
+            
+            up = (conditional_returns > 0).sum()
+            count = conditional_returns.count()
+            prob = up / count if count != 0 else 0.0
+            expected_return = conditional_returns.mean() if count != 0 else 0.0
+            
+            return prob, expected_return
+
+        # Calculate probabilities and expected returns for a range of returns
+        rs = [x / 100 for x in range(-50, 51)]
+        
+        results: Dict[float, Tuple[float, float]] = {r: prob_pos(r) for r in rs}
+
+        # Separate probabilities and expected returns
+        probs, ers = zip(*results.values())
+
+        # Combine the results into a DataFrame
+        prob_df = pd.DataFrame({
+            'Current Return': rs,
+            'Probability Positive': probs,
+            'Expected Fwd Return': ers
+        },index=rs)
+
+        return prob_df.sort_index()
 
 class mbs:
     def __init__(self,asset_price_data=pd.DataFrame,bm_data = pd.Series,start_date=dt.date,end_date=dt.date) -> None:
