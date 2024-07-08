@@ -249,28 +249,27 @@ class fin_stats:
                            Returns None if it never recovers.
         """
         try:
-            peak = self.balance.iloc[0]
-            max_drawdown = 0
-            drawdown_start_index = 0
-
-            # Identify the maximum drawdown
-            for index, x in enumerate(self.balance):
-                if x > peak:
-                    peak = x
-                current_drawdown = (peak - x) / peak
-                if current_drawdown > max_drawdown:
-                    max_drawdown = current_drawdown
-                    drawdown_start_index = index
-
-            # Calculate the recovery period
-            if max_drawdown == 0:
-                return None  # No drawdown occurred
-
-            for recovery_index, x in enumerate(self.balance[drawdown_start_index:], start=drawdown_start_index):
-                if x >= peak:
-                    return recovery_index - drawdown_start_index
-
-            return None  # Never recovers
+            # Calculate cumulative maximum to identify the peak
+            cumulative_max = self.balance.cummax()
+            
+            # Calculate drawdowns
+            drawdowns = (self.balance - cumulative_max) / cumulative_max
+            
+            # Identify the period of the maximum drawdown
+            max_drawdown_end_date = drawdowns.idxmin()
+            max_drawdown_start_date = cumulative_max[:max_drawdown_end_date].idxmax()
+            
+            # Find the recovery date
+            recovery_date = (self.balance[max_drawdown_end_date:] >= self.balance[max_drawdown_start_date]).idxmax()
+            
+            # Check if the asset has recovered
+            if self.balance[recovery_date] < self.balance[max_drawdown_start_date]:
+                return "Not Recovered"
+            
+            # Calculate the number of days to recover
+            recovery_days = (recovery_date - max_drawdown_end_date).days
+            
+            return recovery_days
         except Exception as e:
             logging.exception(f'ERROR calculating Recovery Max DD | {e}')
 
